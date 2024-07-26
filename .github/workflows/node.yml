@@ -4,16 +4,16 @@ on:
   push:
     branches: [ "master" ]
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        
       - name: NodeJs Setup
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{secrets.node_version}}
 
@@ -21,7 +21,7 @@ jobs:
         run: npm install
 
       - name: App Build
-        run: npm run build
+        run: CI=false npm run build
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
