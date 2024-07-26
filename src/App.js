@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import LoginPage from "./pages/LoginPage";
+import AbsenceRequest from "./pages/AbsenceRequest";
+import AddEmployee from './pages/AddEmployee';
+import AbsenceRequestCopy from "./pages/AbsenceRequestCopy";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>Hello World!</p>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<Layout />}>
+          <Route path="/absence_request" element={<AbsenceRequest />} />
+          <Route path="/absence_request_copy" element={<AbsenceRequestCopy />} />
+          <Route path="/add_employee" element={<AddEmployee />} /> 
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

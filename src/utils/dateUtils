@@ -1,0 +1,46 @@
+import moment from 'moment';
+
+/**
+ * Objective: To count the number of dates each time it appears.
+ * @param text 
+ * @returns {Object} dateCounts
+ */
+export const extractDates = (text) => {
+  const datePattern = /\b(\d{1,2}(?:st|nd|rd|th)?[-\/\s]?(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?|\d{1,2})[-\/\s]?\d{2,4})\b/gi;
+  const matches = text.match(datePattern);
+  const dateCounts = {};
+
+  if (matches) {
+    matches.forEach(dateStr => {
+      const date = moment(dateStr, [
+        "DD-MM-YYYY", "DD/MM/YYYY", "DD MMM YYYY", "DD MMMM YYYY",
+        "MMMM DD, YYYY", "MMM DD, YYYY", "DD/MM/YY", "DD-MM-YY"
+      ], true);
+
+      if (date.isValid()) {
+        const formattedDate = date.format('YYYY-MM-DD');
+        if (dateCounts[formattedDate]) {
+          dateCounts[formattedDate] += 1;
+        } else {
+          dateCounts[formattedDate] = 1;
+        }
+      }
+    });
+  }
+  return dateCounts;
+};
+
+/**
+ * Objective: To validate if the applied start and end dates are in the dates array (without duplicates).
+ */
+export const isValid = (dates, startDate, endDate) => {
+  if (!dates[startDate] || !dates[endDate]) {
+    return false;
+  }
+
+  if (startDate === endDate) {
+    return dates[startDate] >= 2;
+  }
+
+  return dates[startDate] && dates[endDate];
+};
