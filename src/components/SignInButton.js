@@ -10,7 +10,7 @@ const SignInButton = () => {
 
     return (
         <button type="button" onClick={() => login()}>
-            Sign in with Microsoft
+            Sign in with Microsoft 
         </button>
     );
 };
