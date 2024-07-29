@@ -6,8 +6,10 @@ const SignInButton = () => {
     const { instance } = useMsal();
     const { login } = useMsalAuthentication('redirect', loginRequest);
 
+    
+
     return (
-        <button onClick={() => login()}>
+        <button type="button" onClick={() => login()}>
             Sign in with Microsoft
         </button>
     );
