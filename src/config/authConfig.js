@@ -1,7 +1,5 @@
 // authConfig.js
-import { PublicClientApplication } from "@azure/msal-browser";
-
-const msalConfig = {
+export const msalConfig = {
     auth: {
         clientId: 'b11b9455-88ff-4f2f-92fa-0caf915e91d8',
         authority: 'https://login.microsoftonline.com/common',
@@ -16,5 +14,3 @@ const msalConfig = {
 export const loginRequest = {
     scopes: ['User.Read']
 };
-
-const msalInstance = new PublicClientApplication(msalConfig);
