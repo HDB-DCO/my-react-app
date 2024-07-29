@@ -72,11 +72,12 @@ const Homepage = () => {
         // Define the async function to fetch data
         const fetchData = async () => {
           try {
-            const response = await fetch('http://54.209.224.192:8080/home');
+            const response = await fetch('http://54.209.224.192:8080/employee');
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const result = await response.text();
+            const result = await response.data;
+            console.log("result :: ",result);
             setData(result); // Update state with fetched data
           } catch (error) {
             setError(error); // Update state with error
@@ -101,9 +102,7 @@ const Homepage = () => {
     // Render the data once it's loaded
     return (
         <div>
-        <h1>Environment Variable Value:</h1>
-        <p>{process.env.REACT_APP_REDIRECT_URI}</p>
-        <h1>Fetched Data:</h1>
+        <h3>Fetched Data:</h3>
         <pre>{JSON.stringify(data, null, 2)}</pre>
         <PageLayout>
             <MainContent />
