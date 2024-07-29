@@ -5,12 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { MsalProvider } from '@azure/msal-react';
 import { PublicClientApplication } from '@azure/msal-browser';
-import { msalConfig } from './config/authConfig';
+import { msalInstance } from './config/authConfig';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-
-const msalInstance = new PublicClientApplication(msalConfig);
 
 root.render(
     
