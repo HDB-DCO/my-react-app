@@ -7,6 +7,7 @@ import { callMsGraph } from '../graph';
 import { ProfileData } from '../components/ProfileData';
 import { PageLayout } from '../components/PageLayout';
 import Button from 'react-bootstrap/Button';
+import { REACT_APP_BACKEND_BASE_URL_DEV, REACT_APP_BACKEND_BASE_URL_PROD } from '../config/constants';
 
 /**
  * Renders information about the signed-in user or a button to retrieve data about the user
@@ -75,13 +76,13 @@ const Homepage = () => {
             const currentUrl = window.location.href;
             console.log("currentUrl :: ");
             console.log(currentUrl);
-            const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV;
+            const BASE_URL = REACT_APP_BACKEND_BASE_URL_DEV;
             console.log("BASE_URL :: ",BASE_URL);
             const isLocalhost = currentUrl.includes('http://localhost:3000');
             console.log("isLocalhost :: ",isLocalhost);
             if(isLocalhost === false){
                 console.log("inside if");
-                BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
+                BASE_URL = REACT_APP_BACKEND_BASE_URL_PROD;
                 console.log("BASE_URL :: ",BASE_URL);
             }
             const response = await fetch(`${BASE_URL}/employee`);
