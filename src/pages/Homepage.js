@@ -73,8 +73,8 @@ const Homepage = () => {
         const fetchData = async () => {
           try {
             const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
-            const response = await fetch(`${BASE_URL}/employee`);
             console.log("BASE_URL :: ",BASE_URL);
+            const response = await fetch(`${BASE_URL}/employee`);
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
