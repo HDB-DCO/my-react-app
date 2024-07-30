@@ -75,12 +75,13 @@ const Homepage = () => {
             const currentUrl = window.location.href;
             console.log("currentUrl :: ");
             console.log(currentUrl);
-            const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV
+            const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV;
+            console.log("BASE_URL :: ",BASE_URL);
             console.log("!currentUrl.includes('http://localhost:3000') :: ",!currentUrl.includes('http://localhost:3000'));
             if(!currentUrl.includes('http://localhost:3000')){
                 BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
+                console.log("BASE_URL :: ",BASE_URL);
             }
-            console.log("BASE_URL :: ",BASE_URL);
             const response = await fetch(`${BASE_URL}/employee`);
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
