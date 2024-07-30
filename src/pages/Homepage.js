@@ -79,7 +79,7 @@ const Homepage = () => {
             console.log("BASE_URL :: ",BASE_URL);
             const isLocalhost = currentUrl.includes('http://localhost:3000');
             console.log("isLocalhost :: ",isLocalhost);
-            if(isLocalhost && true){
+            if(isLocalhost && false){
                 BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
                 console.log("BASE_URL :: ",BASE_URL);
             }
