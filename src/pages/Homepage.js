@@ -72,11 +72,14 @@ const Homepage = () => {
         // Define the async function to fetch data
         const fetchData = async () => {
           try {
-            const response = await fetch('http://54.209.224.192:8080/employee');
+            const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+            const response = await fetch(`${BASE_URL}/employee`);
+            console.log("BASE_URL :: ",BASE_URL);
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const result = await response.data;
+            const result = await response.json();
+            console.log("response :: ",response);
             console.log("result :: ",result);
             setData(result); // Update state with fetched data
           } catch (error) {
