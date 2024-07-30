@@ -72,7 +72,12 @@ const Homepage = () => {
         // Define the async function to fetch data
         const fetchData = async () => {
           try {
-            const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+            const currentUrl = window.location.href;
+            const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV
+            if(!currentUrl.includes('http://localhost:3000')){
+                const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
+            }
+            console.log("currentUrl :: ",currentUrl);
             console.log("BASE_URL :: ",BASE_URL);
             const response = await fetch(`${BASE_URL}/employee`);
             if (!response.ok) {
