@@ -74,6 +74,7 @@ const Homepage = () => {
           try {
             const currentUrl = window.location.href;
             const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV
+            console.log("!currentUrl.includes('http://localhost:3000') :: ",!currentUrl.includes('http://localhost:3000'));
             if(!currentUrl.includes('http://localhost:3000')){
                 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
             }
