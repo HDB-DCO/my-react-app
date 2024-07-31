@@ -12,8 +12,19 @@ const AddUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:8080/register/user', {
+    try {const currentUrl = window.location.href;
+      //console.log("currentUrl :: ");
+      //console.log(currentUrl);
+      let BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV;
+      //console.log("BASE_URL :: ",BASE_URL);
+      const isLocalhost = currentUrl.includes('http://localhost:3000');
+      //console.log("isLocalhost :: ",isLocalhost);
+      if(isLocalhost === false){
+          //console.log("inside if");
+          BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
+          //console.log("BASE_URL :: ",BASE_URL);
+      }
+      const response = await fetch(`${BASE_URL}/register/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
