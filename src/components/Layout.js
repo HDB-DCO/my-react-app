@@ -25,7 +25,8 @@ const Layout = () => {
     { text: "Home", href: "/" },
     { text: "Absence Request", href: "/absence_request" },
     { text: "Absence Request Copy", href: "/absence_request_copy" },
-    { text: "Add User", href: "/add_employee" },
+    { text: "Add User", href: "/add_user" },
+    { text: "Add Employee", href: "/add_employee" },
   ];
 
   const [open, setOpen] = useState(false);
