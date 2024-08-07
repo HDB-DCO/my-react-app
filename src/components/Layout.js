@@ -13,24 +13,94 @@ import {
   ListItemIcon,
   CssBaseline,
   Box,
+  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/HDB_logo.png";
+import "../css/Layout.css";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { selectUserRoles, selectIsAuthenticated } from "../redux/selectors";
+import { logout } from '../redux/authSlice';
 
 const drawerWidth = 240;
 
 const Layout = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); 
   // Add more pages here
-  const menuItems = [
+  let menuItems = [
     { text: "Home", href: "/" },
-    { text: "Absence Request", href: "/absence_request" },
-    { text: "Absence Request Copy", href: "/absence_request_copy" },
-    { text: "Add User", href: "/add_user" },
-    { text: "Add Employee", href: "/add_employee" },
   ];
+  const handleLogout = () => {
+    console.log("Button clicked!");
+    dispatch(logout());
+    navigate('/');
+    // Add your logout logic here
+  };
 
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const userRoles = useSelector(selectUserRoles);
+  console.log("userRoles :: ",userRoles);
+  if(userRoles.includes("ADMIN")){
+      menuItems = [
+        { text: "Home", href: "/" },
+        { text: "Add User", href: "/add_user" },
+        { text: "CP Leave Record", href: "/approval_request" },
+        { text: (
+          <Button className="logout-button" onClick={handleLogout}>
+            Logout
+          </Button>
+        ),
+      },
+       ];
+  }else if(userRoles.includes("CP")){
+      menuItems = [
+      { text: "Home", href: "/cp_home" },
+      { text: "Profile", href: "/" },
+      { text: "Absence Request", href: "/absence_request" },
+      { text: "Additional Work Request", href: "/" },
+      { text: "Application Status", href: "/application_status" },
+      { text: "View Timesheet", href: "/" },
+      { text: (
+        <Button className="logout-button" onClick={handleLogout}>
+          Logout
+        </Button>
+      ),
+    },
+     ];
+    
+  }else if(userRoles.includes("PL")){
+      menuItems = [
+      { text: "Home", href: "/" },
+      { text: "Approval Page", href: "/approval_request" },
+      { text: (
+        <Button className="logout-button" onClick={handleLogout}>
+          Logout
+        </Button>
+      ),
+    },
+     ];
+    
+  }else if(userRoles.includes("VENDOR")){
+      menuItems = [
+      { text: "Home", href: "/" },
+      { text: "Approval Page", href: "/approval_request" },
+      { text: (
+        <Button className="logout-button" onClick={handleLogout}>
+          Logout
+        </Button>
+      ),
+    },
+     ];
+    
+  }else{
+      menuItems = [
+    ];
+  }
+
+  const shouldShowBreadcrumbs = menuItems.length !== 0;
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -75,6 +145,7 @@ const Layout = () => {
         }}
       >
         <Toolbar>
+        {shouldShowBreadcrumbs && (
           <IconButton
             color="black"
             aria-label="open drawer"
@@ -83,7 +154,7 @@ const Layout = () => {
             sx={{ mr: 2 }}
           >
             <MenuIcon/>
-          </IconButton>
+          </IconButton>)}
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -97,9 +168,9 @@ const Layout = () => {
             {getPageTitle()}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton color="black">
+          {/* <IconButton color="black">
             <AccountCircle />
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer

@@ -51,3 +51,18 @@ form {
     margin-top: 5px;
   }
   
+  /* SuggestionList.css */
+.suggestions .clickable {
+  cursor: pointer;
+}
+
+.suggestions .non-clickable {
+  cursor: default;
+  color: gray; /* Optional: to visually distinguish non-clickable items */
+}
+
+.suggestions {
+  list-style-type: none;
+  /* padding: 0; /* Removes default padding */
+  /* margin: 0; /* Removes default margin */
+}

@@ -23,16 +23,18 @@ import { pdfjs } from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
 import moment from 'moment';
 import { getDocument } from 'pdfjs-dist';
+import { getIsAuthenticated, getStaffId, getToken, getRoles } from '../js/stateUtils';
+import { fetchClient } from "../js/fetchClient";
+import '../css/AbsenceRequestCopy.css';
 
 const leaveTypes = [
   { value: "annual", label: "Annual Leave" },
-  { value: "medical", label: "Medical Leave" },
+  { value: "mc", label: "Medical Leave" },
 ];
 
 const AbsenceRequestCopy = () => {
-  const [employeeName, setEmployeeName] = useState("Ryan");
-  const [employeeId, setEmployeeId] = useState("12345");
-  const [leaveType, setLeaveType] = useState("medical");
+  const [employeeId, setEmployeeId] = useState(getStaffId());
+  const [leaveType, setLeaveType] = useState("annual");
   const [file, setFile] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [appliedStartDate, setAppliedStartDate] = useState("2024-06-19");
@@ -44,6 +46,14 @@ const AbsenceRequestCopy = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [metadataId, setMetadataId] = useState(""); // Store metadataId
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+
+
+  useEffect(() => {
+    console.log("message :: ",message);
+  },[]);
+
 
   const extractDates = (text) => {
     const datePattern = /\b(\d{1,2}(?:st|nd|rd|th)?[-\/\s]?(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?|\d{1,2})[-\/\s]?\d{2,4})\b/gi;
@@ -85,6 +95,9 @@ const AbsenceRequestCopy = () => {
 
   const handleDropLocal = useCallback(
     async (acceptedFiles) => {
+        setIsUploading(true);
+        setMessage('');
+        setMessageType('');
         if (new Date(appliedStartDate) > new Date(appliedEndDate)) {
           alert("Applied start date must be on or before applied end date");
           return;
@@ -128,7 +141,8 @@ const AbsenceRequestCopy = () => {
   
           // Simulating saving metadata and returning the response
           const metadataId = 'simulatedMetadataId';
-  
+
+          setUploadedFileName(selectedFile.name);
           setOcrResult(ocrText);
           setDates(dates);
           setIsValidDates(isValidDates);
@@ -138,7 +152,7 @@ const AbsenceRequestCopy = () => {
   
         reader.readAsArrayBuffer(selectedFile);
       },
-      [employeeName, employeeId, appliedStartDate, appliedEndDate]
+      [employeeId, appliedStartDate, appliedEndDate]
     );
   
     
@@ -156,7 +170,7 @@ const AbsenceRequestCopy = () => {
 
       const formData = new FormData();
       formData.append("file", selectedFile);
-      formData.append("name", employeeName);
+      //formData.append("name", employeeName);
       formData.append("id", employeeId);
       formData.append("appliedStartDate", appliedStartDate);
       formData.append("appliedEndDate", appliedEndDate);
@@ -182,34 +196,77 @@ const AbsenceRequestCopy = () => {
           console.error("Error uploading file:", error);
         });
     },
-    [employeeName, employeeId, appliedStartDate, appliedEndDate]
+    [employeeId, appliedStartDate, appliedEndDate]
   );
 
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     console.log("Submitting form");
-
+    setMessage('Please wait...');
+    setMessageType('success');
     const formData = new FormData();
-    formData.append("name", employeeName);
-    formData.append("id", employeeId);
+    //formData.append("name", employeeName);
+    formData.append("staffId", employeeId);
     formData.append("leaveType", leaveType);
     formData.append("appliedStartDate", appliedStartDate);
     formData.append("appliedEndDate", appliedEndDate);
-    formData.append("metadataId", metadataId); // Append metadataId; if no MC, will be null
+    formData.append("file",file);
+    formData.append("uploadedFileName",uploadedFileName);
+    //formData.append("ocrResult",ocrResult);
+    //formData.append("dates",dates);
+    formData.append("isValidDates",isValidDates);
+    console.log("formData :: ",formData);
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+    console.log("------------", Object.keys(dates).length );
+    for (let date in dates) {
+      if (dates.hasOwnProperty(date)) {
+        console.log(`${date}: ${dates[date]}`);
+      }
+    }
+    //formData.append("metadataId", metadataId); // Append metadataId; if no MC, will be null
+    
+    const response = await fetchClient('submitEmployeeLeave',{
+      method: 'POST',
+      body: formData,//JSON.stringify(formData),
+    },null);
+    console.log("response :: ",response);
+    const responseData = await response.text();
+    console.log("responseData :: ",responseData);
+    if (response.ok) {
+      setMessage(responseData);
+      setMessageType('success');
+    } else {
+      setMessage('File is not Uploaded successfully please try again later');
+      setMessageType('error');
+    }
+    setFile(null);
+    setAppliedStartDate('2024-06-19');
+    setAppliedEndDate('2024-06-19');
+    setLeaveType('annual');
+    setUploadedFileName('');
+    setOcrResult('');
+    setDates({});
+    setIsValidDates(false);
 
-    axios
-      .post("/submitAbsenceRequest", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error("Error submitting form:", error);
-      });
+
+    // axios
+    //   .post("/submitAbsenceRequest", formData, {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   })
+    //   .then((response) => {
+    //     navigate("/");
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error submitting form:", error);
+    //   });
+
+
+
   };
 
   const handleDialogOpen = () => {
@@ -231,7 +288,6 @@ const AbsenceRequestCopy = () => {
 
   useEffect(() => {
     const isFormFilled =
-      employeeName &&
       employeeId &&
       leaveType &&
       appliedStartDate &&
@@ -240,7 +296,6 @@ const AbsenceRequestCopy = () => {
       leaveType === "medical" ? file && isValidDates : true;
     setIsFormValid(isFormFilled && isMedicalValid);
   }, [
-    employeeName,
     employeeId,
     leaveType,
     appliedStartDate,
@@ -265,19 +320,10 @@ const AbsenceRequestCopy = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Employee Name"
-                value={employeeName}
-                onChange={(e) => setEmployeeName(e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
                 label="Employee ID"
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
-                required
+                disabled={true}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -296,7 +342,6 @@ const AbsenceRequestCopy = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}></Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -320,7 +365,7 @@ const AbsenceRequestCopy = () => {
               />
             </Grid>
 
-            {leaveType === "medical" && appliedEndDate && appliedStartDate && (
+            {leaveType === "mc" && appliedEndDate && appliedStartDate && (
               <Grid item xs={12}>
                 <FileUpload
                   onDrop={handleDropLocal}
@@ -328,6 +373,12 @@ const AbsenceRequestCopy = () => {
                   uploadedFileName={uploadedFileName}
                 />
               </Grid>
+            )}
+
+            {message && (
+                <div className={`message ${messageType}`}>
+                    {message}
+                </div>
             )}
             <Grid item xs={12}>
               <Button
@@ -342,7 +393,7 @@ const AbsenceRequestCopy = () => {
             </Grid>
           </Grid>
         </form>
-        <Box mt={4}>
+        {/* <Box mt={4}>
           <Typography variant="h6">OCR Result:</Typography>
           <Typography variant="body1">{ocrResult}</Typography>
           <Typography variant="h6">Extracted Dates:</Typography>
@@ -355,7 +406,7 @@ const AbsenceRequestCopy = () => {
           </ul>
           <Typography variant="h6">Is valid:</Typography>
           <Typography variant="body1">{isValidDates.toString()}</Typography>
-        </Box>
+        </Box> */}
       </Paper>
 
       <Dialog
