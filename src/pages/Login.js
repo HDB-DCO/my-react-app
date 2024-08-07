@@ -3,6 +3,7 @@ import '../css/Login.css'; // Your CSS file for styling
 import { useDispatch } from 'react-redux';
 import { useNavigate  } from 'react-router-dom';
 import { login, logout } from '../redux/authSlice';
+import { fetchClient } from '../js/fetchClient';
 
 const Login = () => {
 
@@ -30,13 +31,13 @@ const Login = () => {
         // Simulated login process
        
         try {
-            const response = await fetch(`http://localhost:8080/authenticate`, {
+            const response = await fetchClient(`authenticate`, {
               method: 'POST', // Assuming your API uses PUT for editing
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({'username':username, 'password':password}),
-            });
+            },null);
             if (response.ok) {
                 console.log("response :: ",response);
                 const data = await response.json();
