@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { getIsAuthenticated, getStaffId, getToken, getRoles } from '../js/stateUtils';
+import FileModal from './FileModal';
 
 const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPageChange, onRowsPerPageChange, onApprove, totalPages }) => {
   //const [data, setData] = useState([]);
@@ -19,9 +20,32 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   const [additionalData, setAdditionalData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const role = getRoles()[0];
+  const [fileType, setFileType] = useState(''); // 'image' or 'pdf'
+  const [modalOpen, setModalOpen] = useState(false);
+  const [fileUrl, setFileUrl] = useState('');
   
-  let filteredFields = fields.filter(field => field !== 'id');
-  console.log("role :: ",role);
+  const handleOpenModal = (url) => {
+    setFileUrl(url);
+
+    // Set file type based on URL extension or content type
+    if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png')) {
+      setFileType('image');
+    } else if (url.endsWith('.pdf')) {
+      setFileType('pdf');
+    } else {
+      setFileType('');
+    }
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  let filteredFields = fields.filter(field => (field !== 'id' && field !== 'fileUrl')); 
+  // filteredFields = filteredFields.filter(field => (field !== 'fileUrl')); 
+  // filteredFields = filteredFields.filter(field => (field !== 'fileType'));
+  //console.log("role :: ",role);
   if(role ==='PL')
   {
     filteredFields = filteredFields.filter(field => field !== 'isVendorApproved');
@@ -36,7 +60,7 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   const userToken = useSelector(selectToken);
   const userRoles = useSelector(selectUserRoles);
   const hasAdminRole = userRoles.includes('ADMIN');
-  console.log("fields :: ",fields);
+  //console.log("fields :: ",fields);
   const transformData = (data) => {
     return data.map(({ id, leaveType, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, }) => ({
       id,
@@ -132,12 +156,73 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
     //setCurrentPage(page);
   };
 
+  function base64ToArrayBuffer(base64) {
+    var binaryString = window.atob(base64);
+    var binaryLen = binaryString.length;
+    var bytes = new Uint8Array(binaryLen);
+    for (var i = 0; i < binaryLen; i++) {
+       var ascii = binaryString.charCodeAt(i);
+       bytes[i] = ascii;
+    }
+    return bytes;
+ }
+
+ function saveByteArray(reportName, byte, fileType) {
+  var blob = new Blob([byte], {type: fileType});
+  var link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  var fileName = reportName;
+  link.download = fileName;
+  link.click();
+};
+
+  const handleOpenFile = (fileData, fileName, fileType) => {
+    console.log("handleOpenFile---------")
+    if(fileType==='pdf'){
+      fileType = 'application/pdf';
+    } else if(fileType==='jpg'){
+      fileType = 'image/jpeg';
+    } else if(fileType==='jpeg'){
+      fileType = 'image/jpeg';
+    }
+    
+    console.log(fileData, fileName, fileType);
+
+
+    const url = window.URL.createObjectURL(new Blob([fileData], { type: 'application/octet-stream' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+
+    //var sampleArr = base64ToArrayBuffer(fileData);
+    //saveByteArray("Sample Report", sampleArr, fileType);  
+    
+  };
+
+const handleDownload = async (imageId, imageName) => {
+  console.log("handleDownload----------");
+        try {
+            const response = await fetchClient(`downloadImage/${imageId}`, { method: 'GET' });
+            const blob = await response.blob();
+            console.log("after network call handleDownload----------");
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', imageName);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                console.log("at the end handleDownload----------");
+        } catch (error) {
+            console.error('Error downloading file', error);
+            alert('Error downloading file');
+        }
+    };
 
   return (
     <div>
-        {console.log("data :: ",data)}  
-        {console.log("fields :: ",fields)}  
-        {console.log("filteredColumns :: ",filteredFields)}  
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -155,8 +240,30 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
                 {/*  onClick={() => handleRowClick(item.id)}> */}
                   {filteredFields.map(field => (
                     <TableCell key={field}>{
-                        
-                        field === 'isPlApproved' && role=='PL' ? (
+                        field === 'uploadedFileName' ? (<>
+                        { item[field] && (
+                          <div>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={()=>handleOpenModal(item.fileUrl)}
+                            style={{ marginTop: '20px' }}
+                          >
+                            {item[field]}
+                          </Button>
+                          <FileModal
+                            open={modalOpen}
+                            onClose={handleCloseModal}
+                            fileUrl={item.fileUrl}
+                            fileType={fileType}
+                          />
+                          {/* <Button onClick={() => handleDownload(item.id,item.uploadedFileName)}>
+                                {item[field]}
+                          </Button> */}
+                        </div>
+                        )}</>
+                        ) :
+                        ( field === 'isPlApproved' && role=='PL' ? (
                             <>
                                 <Button
                                     variant="contained"
@@ -195,7 +302,11 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
                         ) : (
                             item[field]
                         )
-                        )}
+                        )
+                      )
+                        
+                        
+                        }
                         
                         </TableCell>
                   ))}

@@ -51,8 +51,8 @@ const AbsenceRequestCopy = () => {
 
 
   useEffect(() => {
-    console.log("message :: ",message);
-  },[]);
+    //setIsUploading(true);
+  },[leaveType]);
 
 
   const extractDates = (text) => {
@@ -204,6 +204,7 @@ const AbsenceRequestCopy = () => {
   const handleSubmit = async () => {
     console.log("Submitting form");
     setMessage('Please wait...');
+    //setIsUploading(true);
     setMessageType('success');
     const formData = new FormData();
     //formData.append("name", employeeName);
@@ -380,13 +381,14 @@ const AbsenceRequestCopy = () => {
                     {message}
                 </div>
             )}
+            {console.log("disabled :: ",!isFormValid , !isUploading)}
             <Grid item xs={12}>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
                 fullWidth
-                disabled={!isFormValid}
+                disabled={!isFormValid || isUploading || message==='Please wait...'}
               >
                 Submit
               </Button>

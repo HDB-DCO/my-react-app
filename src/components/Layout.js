@@ -29,11 +29,9 @@ const Layout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); 
   // Add more pages here
-  let menuItems = [
-    { text: "Home", href: "/" },
-  ];
+  let menuItems = [];
   const handleLogout = () => {
-    console.log("Button clicked!");
+    //console.log("Button clicked!");
     dispatch(logout());
     navigate('/');
     // Add your logout logic here
@@ -42,12 +40,12 @@ const Layout = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const userRoles = useSelector(selectUserRoles);
-  console.log("userRoles :: ",userRoles);
+  //console.log("userRoles :: ",userRoles);
   if(userRoles.includes("ADMIN")){
       menuItems = [
         { text: "Home", href: "/" },
         { text: "Add User", href: "/add_user" },
-        { text: "CP Leave Record", href: "/approval_request" },
+        { text: "CP Leave Record", href: "/application_status" },
         { text: (
           <Button className="logout-button" onClick={handleLogout}>
             Logout

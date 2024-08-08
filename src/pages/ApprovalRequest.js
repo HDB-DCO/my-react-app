@@ -29,14 +29,10 @@ const ApprovalRequest = () => {
       };
 
       useEffect(() => {
-        console.log("[page, rowsPerPage]-----------------------");
         fetchData(page, rowsPerPage);
     }, []);
 
     useEffect(() => {
-        console.log("[page, rowsPerPage]-----------------------");
-        console.log("page :: ",page);
-        console.log("rowsPerPage :: ",rowsPerPage);
         fetchData(page, rowsPerPage);
     }, [page, rowsPerPage]);
 
@@ -46,8 +42,8 @@ const ApprovalRequest = () => {
             const response = await fetchClient(`getAbsenceRequests/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
-            console.log("result :: ",result);
-            console.log("result.columns :: ",result.columns);
+            //console.log("result :: ",result);
+            //console.log("result.columns :: ",result.columns);
             const data = transformData(result.content);
             setData(data);
             setTotalCount(result.totalPages);
@@ -82,7 +78,6 @@ const ApprovalRequest = () => {
 
     return (
         <>
-        {console.log("loading :: ",loading)}
         <div>
         { loading ? (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -90,9 +85,6 @@ const ApprovalRequest = () => {
         </Box>
         ) : (
         <div>
-            {console.log("loading :: ",loading)}
-            {console.log("hii----------------------")}
-            {console.log("columns :: ",columns)}
             <ApplicationStatusTable
             data={data}
             fields={columns}
