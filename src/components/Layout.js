@@ -59,7 +59,7 @@ const Layout = () => {
       { text: "Profile", href: "/" },
       { text: "Absence Request", href: "/absence_request" },
       { text: "Additional Work Request", href: "/" },
-      { text: "Application Statuss", href: "/application_status" },
+      { text: "Application Status", href: "/application_status" },
       { text: "View Timesheet", href: "/" },
       { text: (
         <Button className="logout-button" onClick={handleLogout}>
