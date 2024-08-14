@@ -395,8 +395,8 @@ const AbsenceRequestCopy = () => {
             </Grid>
           </Grid>
         </form>
-        {/* <Box mt={4}>
-          <Typography variant="h6">OCR Result:</Typography>
+        <Box mt={4}>
+          {/* <Typography variant="h6">OCR Result:</Typography>
           <Typography variant="body1">{ocrResult}</Typography>
           <Typography variant="h6">Extracted Dates:</Typography>
           <ul>
@@ -405,10 +405,10 @@ const AbsenceRequestCopy = () => {
                 {date}: {count} times
               </li>
             ))}
-          </ul>
+          </ul> */}
           <Typography variant="h6">Is valid:</Typography>
           <Typography variant="body1">{isValidDates.toString()}</Typography>
-        </Box> */}
+        </Box>
       </Paper>
 
       <Dialog
