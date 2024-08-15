@@ -8,7 +8,6 @@ import dynamicImport from './pages/manage_role/dynamicImport';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import { useLocation } from 'react-router-dom';
 import Layout from "./components/Layout";
-import LoginPage from "./pages/LoginPage";
 import AbsenceRequest from "./pages/AbsenceRequest";
 import AddEmployee from './pages/AddEmployee';
 import AbsenceRequestCopy from "./pages/AbsenceRequestCopy";
