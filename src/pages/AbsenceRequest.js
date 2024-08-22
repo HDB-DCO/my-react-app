@@ -50,7 +50,7 @@ const AbsenceRequest = () => {
 
       const selectedFile = acceptedFiles[0];
       setFile(selectedFile);
-      console.log("Sending file to backend", selectedFile)
+      //console.log("Sending file to backend", selectedFile)
 
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -86,7 +86,7 @@ const AbsenceRequest = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    console.log("Submitting form");
+    //console.log("Submitting form");
 
     const formData = new FormData();
     formData.append("name", employeeName);
@@ -124,7 +124,7 @@ const AbsenceRequest = () => {
   };
 
   // useEffect(() => {
-  //   console.log("appliedStartDate :: ",appliedStartDate);
+  //   //console.log("appliedStartDate :: ",appliedStartDate);
   // },[appliedStartDate]);
 
   useEffect(() => {

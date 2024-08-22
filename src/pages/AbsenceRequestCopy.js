@@ -105,7 +105,7 @@ const AbsenceRequestCopy = () => {
   
         const selectedFile = acceptedFiles[0];
         setFile(selectedFile);
-        console.log("Processing file", selectedFile);
+        //console.log("Processing file", selectedFile);
   
         const reader = new FileReader();
         reader.onload = async (e) => {
@@ -166,7 +166,7 @@ const AbsenceRequestCopy = () => {
 
       const selectedFile = acceptedFiles[0];
       setFile(selectedFile);
-      console.log("Sending file to backend", selectedFile)
+      //console.log("Sending file to backend", selectedFile)
 
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -202,7 +202,7 @@ const AbsenceRequestCopy = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    console.log("Submitting form");
+    //console.log("Submitting form");
     setMessage('Please wait...');
     //setIsUploading(true);
     setMessageType('success');
@@ -217,14 +217,14 @@ const AbsenceRequestCopy = () => {
     //formData.append("ocrResult",ocrResult);
     //formData.append("dates",dates);
     formData.append("isValidDates",isValidDates);
-    console.log("formData :: ",formData);
+    //console.log("formData :: ",formData);
     formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
+      //console.log(`${key}: ${value}`);
     });
-    console.log("------------", Object.keys(dates).length );
+    //console.log("------------", Object.keys(dates).length );
     for (let date in dates) {
       if (dates.hasOwnProperty(date)) {
-        console.log(`${date}: ${dates[date]}`);
+        //console.log(`${date}: ${dates[date]}`);
       }
     }
     //formData.append("metadataId", metadataId); // Append metadataId; if no MC, will be null
@@ -233,9 +233,9 @@ const AbsenceRequestCopy = () => {
       method: 'POST',
       body: formData,//JSON.stringify(formData),
     },null);
-    console.log("response :: ",response);
+    //console.log("response :: ",response);
     const responseData = await response.text();
-    console.log("responseData :: ",responseData);
+    //console.log("responseData :: ",responseData);
     if (response.ok) {
       setMessage(responseData);
       setMessageType('success');
@@ -284,7 +284,7 @@ const AbsenceRequestCopy = () => {
   };
 
   // useEffect(() => {
-  //   console.log("appliedStartDate :: ",appliedStartDate);
+  //   //console.log("appliedStartDate :: ",appliedStartDate);
   // },[appliedStartDate]);
 
   useEffect(() => {
@@ -381,7 +381,7 @@ const AbsenceRequestCopy = () => {
                     {message}
                 </div>
             )}
-            {console.log("disabled :: ",!isFormValid , !isUploading)}
+            {/* {console.log("disabled :: ",!isFormValid , !isUploading)} */}
             <Grid item xs={12}>
               <Button
                 type="submit"

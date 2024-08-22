@@ -24,7 +24,7 @@ const getBaseUrl = () => {
 }
 
 export const fetchClient = async (url, options = {}, queryParams = null) => {
-    console.log("fetchClient---------");
+    //console.log("fetchClient---------");
     let fullUrl = getBaseUrl()+url;
     // If queryParams are provided, construct the full URL with query parameters
     if (queryParams) {

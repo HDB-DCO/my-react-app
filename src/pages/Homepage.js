@@ -73,24 +73,24 @@ const Homepage = () => {
         const fetchData = async () => {
           try {
             const currentUrl = window.location.href;
-            console.log("currentUrl :: ");
-            console.log(currentUrl);
+            //console.log("currentUrl :: ");
+            //console.log(currentUrl);
             let BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV;
-            console.log("BASE_URL :: ",BASE_URL);
+            //console.log("BASE_URL :: ",BASE_URL);
             const isLocalhost = currentUrl.includes('http://localhost:3000');
-            console.log("isLocalhost :: ",isLocalhost);
+            //console.log("isLocalhost :: ",isLocalhost);
             if(isLocalhost === false){
-                console.log("inside if");
+                //console.log("inside if");
                 BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
-                console.log("BASE_URL :: ",BASE_URL);
+                //console.log("BASE_URL :: ",BASE_URL);
             }
             const response = await fetch(`${BASE_URL}/employee`);
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const result = await response.json();
-            console.log("response :: ",response);
-            console.log("result :: ",result);
+            //console.log("response :: ",response);
+            //console.log("result :: ",result);
             setData(result); // Update state with fetched data
           } catch (error) {
             setError(error); // Update state with error

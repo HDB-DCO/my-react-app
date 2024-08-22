@@ -45,7 +45,7 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   let filteredFields = fields.filter(field => (field !== 'id' && field !== 'fileUrl')); 
   // filteredFields = filteredFields.filter(field => (field !== 'fileUrl')); 
   // filteredFields = filteredFields.filter(field => (field !== 'fileType'));
-  //console.log("role :: ",role);
+  ////console.log("role :: ",role);
   if(role ==='PL')
   {
     filteredFields = filteredFields.filter(field => field !== 'isVendorApproved');
@@ -60,7 +60,7 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   const userToken = useSelector(selectToken);
   const userRoles = useSelector(selectUserRoles);
   const hasAdminRole = userRoles.includes('ADMIN');
-  //console.log("fields :: ",fields);
+  ////console.log("fields :: ",fields);
   const transformData = (data) => {
     return data.map(({ id, leaveType, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, }) => ({
       id,
@@ -115,7 +115,7 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   };
 
   const handleSaveClick = (id) => {
-    //console.log("JSON.stringify(additionalData) :: ",JSON.stringify(additionalData[0]));
+    ////console.log("JSON.stringify(additionalData) :: ",JSON.stringify(additionalData[0]));
     fetchClient(`http://localhost:8080/student`, {
         method: 'PUT',
         body: JSON.stringify(additionalData[0]), // Ensure additionalData contains the updated data
@@ -177,7 +177,7 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
 };
 
   const handleOpenFile = (fileData, fileName, fileType) => {
-    console.log("handleOpenFile---------")
+    //console.log("handleOpenFile---------")
     if(fileType==='pdf'){
       fileType = 'application/pdf';
     } else if(fileType==='jpg'){
@@ -186,7 +186,7 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
       fileType = 'image/jpeg';
     }
     
-    console.log(fileData, fileName, fileType);
+    //console.log(fileData, fileName, fileType);
 
 
     const url = window.URL.createObjectURL(new Blob([fileData], { type: 'application/octet-stream' }));
@@ -202,11 +202,11 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   };
 
 const handleDownload = async (imageId, imageName) => {
-  console.log("handleDownload----------");
+  //console.log("handleDownload----------");
         try {
             const response = await fetchClient(`downloadImage/${imageId}`, { method: 'GET' });
             const blob = await response.blob();
-            console.log("after network call handleDownload----------");
+            //console.log("after network call handleDownload----------");
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
@@ -214,7 +214,7 @@ const handleDownload = async (imageId, imageName) => {
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                console.log("at the end handleDownload----------");
+                //console.log("at the end handleDownload----------");
         } catch (error) {
             console.error('Error downloading file', error);
             alert('Error downloading file');
@@ -223,6 +223,7 @@ const handleDownload = async (imageId, imageName) => {
 
   return (
     <div>
+      {console.log("data :: ",data)}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -263,7 +264,7 @@ const handleDownload = async (imageId, imageName) => {
                         </div>
                         )}</>
                         ) :
-                        ( field === 'isPlApproved' && role=='PL' ? (
+                        ( field === 'isPlApproved' && item[field]==='pending' && role==='PL' ? (
                             <>
                                 <Button
                                     variant="contained"
@@ -282,7 +283,7 @@ const handleDownload = async (imageId, imageName) => {
                             </>
                         ) : (
 
-                            field === 'isVendorApproved' && role=='VENDOR' ? (
+                            field === 'isVendorApproved' && item[field]==='pending' && role=='VENDOR' ? (
                             <>
                                 <Button
                                     variant="contained"

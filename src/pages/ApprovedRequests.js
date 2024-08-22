@@ -5,7 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { getIsAuthenticated, getStaffId, getToken, getRoles } from '../js/stateUtils';
 
-const ApprovalRequest = () => {
+const ApprovedRequests = () => {
     const [data, setData] = useState([]);
     const [page, setPage] = useState(0);
     const [columns, setColumns] = useState([]);
@@ -16,7 +16,7 @@ const ApprovalRequest = () => {
     const staffId = getStaffId();
 
     const transformData = (data) => {
-        return data.map(({ id, username, leaveType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, }) => ({
+        return data.map(({ id, username, leaveType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, fileUrl, }) => ({
           id,
           username,
           leaveType,
@@ -26,6 +26,7 @@ const ApprovalRequest = () => {
           uploadedFileName,
           isPlApproved,
           isVendorApproved,
+          fileUrl,
         }));
       };
 
@@ -40,7 +41,7 @@ const ApprovalRequest = () => {
     const fetchData = async (page, rowsPerPage) => {
         try {
             setLoading(true);
-            const response = await fetchClient(`getAbsenceRequests/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
+            const response = await fetchClient(`getAbsenceRequestsApproved/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
             ////console.log("result :: ",result);
@@ -114,4 +115,4 @@ const ApprovalRequest = () => {
     );
 };
 
-export default ApprovalRequest;
+export default ApprovedRequests;

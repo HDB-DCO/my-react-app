@@ -14,19 +14,19 @@ const FileUpload = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("employeeId :: ",employeeId);
-        console.log("leaveType :: ",leaveType);
-        console.log("appliedStartDate :: ",appliedStartDate);
-        console.log("appliedEndDate :: ",appliedEndDate);
-        console.log("file :: ",file);
+        //console.log("employeeId :: ",employeeId);
+        //console.log("leaveType :: ",leaveType);
+        //console.log("appliedStartDate :: ",appliedStartDate);
+        //console.log("appliedEndDate :: ",appliedEndDate);
+        //console.log("file :: ",file);
         const formData = new FormData();
         formData.append('employeeId', employeeId);
         formData.append('leaveType', leaveType);
         formData.append('appliedStartDate', appliedStartDate);
         formData.append('appliedEndDate', appliedEndDate);
         formData.append('file', file);
-        console.log("formData :: ",formData);
-        console.log("JSON.stringify({ employeeId, leaveType, appliedStartDate, appliedEndDate, file }) :: ",JSON.stringify({ employeeId, leaveType, appliedStartDate, appliedEndDate }));
+        //console.log("formData :: ",formData);
+        //console.log("JSON.stringify({ employeeId, leaveType, appliedStartDate, appliedEndDate, file }) :: ",JSON.stringify({ employeeId, leaveType, appliedStartDate, appliedEndDate }));
 
         try {
             const response = await fetchClient('api/upload', {
@@ -39,7 +39,7 @@ const FileUpload = () => {
             }
 
             const result = await response.text();
-            console.log(result);
+            //console.log(result);
         } catch (error) {
             console.error('Error:', error);
         }

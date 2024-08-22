@@ -31,7 +31,7 @@ const Layout = () => {
   // Add more pages here
   let menuItems = [];
   const handleLogout = () => {
-    //console.log("Button clicked!");
+    ////console.log("Button clicked!");
     dispatch(logout());
     navigate('/');
     // Add your logout logic here
@@ -40,17 +40,17 @@ const Layout = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const userRoles = useSelector(selectUserRoles);
-  //console.log("userRoles :: ",userRoles);
+  ////console.log("userRoles :: ",userRoles);
   if(userRoles.includes("ADMIN")){
       menuItems = [
-        { text: "Home", href: "/" },
+        { text: "Home", href: "/admin_home" },
         { text: "Add User", href: "/add_user" },
         { text: "CP Leave Record", href: "/application_status" },
         { text: (
           <Button className="logout-button" onClick={handleLogout}>
             Logout
           </Button>
-        ),
+        ),    
       },
        ];
   }else if(userRoles.includes("CP")){
@@ -71,8 +71,9 @@ const Layout = () => {
     
   }else if(userRoles.includes("PL")){
       menuItems = [
-      { text: "Home", href: "/" },
-      { text: "Approval Page", href: "/approval_request" },
+      { text: "Home", href: "/pl_home" },
+      { text: "CP Leave Approval", href: "/approval_request" },
+      { text: "CP Approved Leaves ", href: "/approved_requests" },
       { text: (
         <Button className="logout-button" onClick={handleLogout}>
           Logout
@@ -83,8 +84,9 @@ const Layout = () => {
     
   }else if(userRoles.includes("VENDOR")){
       menuItems = [
-      { text: "Home", href: "/" },
-      { text: "Approval Page", href: "/approval_request" },
+      { text: "Home", href: "/vendor_home" },
+      { text: "CP Leave Approval Page", href: "/approval_request" },
+      { text: "CP Approved Leaves ", href: "/approved_requests" },
       { text: (
         <Button className="logout-button" onClick={handleLogout}>
           Logout

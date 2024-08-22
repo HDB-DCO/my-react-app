@@ -39,19 +39,19 @@ const Login = () => {
               body: JSON.stringify({'username':username, 'password':password}),
             },null);
             if (response.ok) {
-                console.log("response :: ",response);
+                //console.log("response :: ",response);
                 const data = await response.json();
-                console.log("data :: ",data);
-                //console.log(data.username,data.token);
+                //console.log("data :: ",data);
+                ////console.log(data.username,data.token);
                 const staffId = data.staffId;
                 const token = data.token;
                 const roles = data.role;
-                // console.log("usernameRes :: ",username);
-                // console.log("token :: ",token);
-                // console.log("roles :: ",roles);
+                // //console.log("usernameRes :: ",username);
+                // //console.log("token :: ",token);
+                // //console.log("roles :: ",roles);
                 dispatch(login({staffId, token, roles}));
-                // console.log("before redirecting to profile");
-                // console.log("roles.includes('ADMIN') :: ",roles.includes('ADMIN'));
+                // //console.log("before redirecting to profile");
+                // //console.log("roles.includes('ADMIN') :: ",roles.includes('ADMIN'));
                 if(roles.includes('ADMIN')){
                   navigate('/admin_home');
                 }

@@ -22,16 +22,16 @@ const AddUser = () => {
 
 
   useEffect(() => {
-  console.log('Is Authenticated:', getIsAuthenticated());
-  console.log('Username:', getStaffId());
-  console.log('Token:', getToken());
-  console.log('Roles:', getRoles().join(', '));
+  //console.log('Is Authenticated:', getIsAuthenticated());
+  //console.log('Username:', getStaffId());
+  //console.log('Token:', getToken());
+  //console.log('Roles:', getRoles().join(', '));
   }, []);
   
   useEffect(() => {
-    console.log("searchTerm :: ",searchTerm);
-    console.log("suggestionSelected :: ",suggestionSelected);
-    console.log("plName :: ",plName);
+    //console.log("searchTerm :: ",searchTerm);
+    //console.log("suggestionSelected :: ",suggestionSelected);
+    //console.log("plName :: ",plName);
     const fetchSuggestions = async () => {
       if (searchTerm.length > 0 && !suggestionSelected) {
         const suggestions = await searchUserByRole('getPls');
@@ -63,16 +63,27 @@ const AddUser = () => {
   }, [vendorName]);
 
 
+  // const isFormValid = () => {
+  //   let isValid = username !== '' && staffId !== '' && email !== '' && mobile !== '' && role !== '' && password !== '';
+  //   if(role==='CP'){
+  //     const plId = plName.staffId;
+  //     const vendorId = vendorName.staffId;
+  //     isValid = plId !== '' && vendorId !== '';
+  //   } 
+  //   return isValid;
+  //   // Add more validation checks for other required fields
+  // };
+
   const searchUserByRole = async (url) => {
-    //console.log("searchUserByname --------");
-    //console.log(url+`${searchTerm}`);
+    ////console.log("searchUserByname --------");
+    ////console.log(url+`${searchTerm}`);
     const response = await fetchClient(url,{},{query:searchTerm}); 
     if (!response.ok) {
       throw new Error('Network response was not ok');
   }
-  console.log("response :: ",response);
+  //console.log("response :: ",response);
   const data = await response.json();
-    console.log("data :: ",data);
+    //console.log("data :: ",data);
     //const names = data.map((item) => `${item.name} (${item.username})`);
     return data;
   };
@@ -84,7 +95,7 @@ const AddUser = () => {
     setSuggestions([]);
     setPlName(suggestion);
     setSuggestionSelected(true); 
-    //console.log("suggestions :: ",suggestions);
+    ////console.log("suggestions :: ",suggestions);
   };
 
   const selectVendorfromList = (suggestion) => {
@@ -93,26 +104,26 @@ const AddUser = () => {
     setVendorSuggestions([]);
     setvendorName(suggestion);
     setSuggestionSelected(true); 
-    //console.log("suggestions :: ",suggestions);
+    ////console.log("suggestions :: ",suggestions);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {const currentUrl = window.location.href;
-      //console.log("currentUrl :: ");
-      //console.log(currentUrl);
+      ////console.log("currentUrl :: ");
+      ////console.log(currentUrl);
       let BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_DEV;
-      //console.log("BASE_URL :: ",BASE_URL);
+      ////console.log("BASE_URL :: ",BASE_URL);
       const isLocalhost = currentUrl.includes('http://localhost:3000');
-      //console.log("isLocalhost :: ",isLocalhost);
+      ////console.log("isLocalhost :: ",isLocalhost);
       if(isLocalhost === false){
-          //console.log("inside if");
+          ////console.log("inside if");
           BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL_PROD;
-          //console.log("BASE_URL :: ",BASE_URL);
+          ////console.log("BASE_URL :: ",BASE_URL);
       }
     const plId = plName.staffId;
     const vendorId = vendorName.staffId;
-    console.log(JSON.stringify({ username, staffId, email, mobile, role, password, plId, vendorId }));
+    //console.log(JSON.stringify({ username, staffId, email, mobile, role, password, plId, vendorId }));
       const response = await fetchClient(`register/user`, {
         method: 'POST',
         headers: {
@@ -230,6 +241,10 @@ const AddUser = () => {
       </label>
       {message && <p>{message}</p>}
       <button type="submit">Add User</button>
+      {/* <button disabled={!isFormValid()} type="submit"  style={{
+          backgroundColor: isFormValid() ? 'blue' : 'gray',
+          cursor: isFormValid() ? 'pointer' : 'not-allowed',
+        }}>Add User</button> */}
     </form>
   );
 };
