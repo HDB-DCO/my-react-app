@@ -20,3 +20,8 @@ export const getRoles = () => {
   const state = store.getState();
   return state.auth.user.roles;
 };
+
+export const getCurrentPage = () => {
+  const state = store.getState();
+  return state.global.currentPage;
+};

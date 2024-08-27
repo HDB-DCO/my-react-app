@@ -46,13 +46,13 @@ const ApplicationStatusTable = ({ data, fields, currentPage, rowsPerPage, onPage
   // filteredFields = filteredFields.filter(field => (field !== 'fileUrl')); 
   // filteredFields = filteredFields.filter(field => (field !== 'fileType'));
   ////console.log("role :: ",role);
-  if(role ==='PL')
-  {
-    filteredFields = filteredFields.filter(field => field !== 'isVendorApproved');
-  } else if(role ==='VENDOR')
-    {
-      filteredFields = filteredFields.filter(field => field !== 'isPlApproved');
-    }
+  // if(role ==='PL')
+  // {
+  //   filteredFields = filteredFields.filter(field => field !== 'isVendorApproved');
+  // } else if(role ==='VENDOR')
+  //   {
+  //     filteredFields = filteredFields.filter(field => field !== 'isPlApproved');
+  //   }
   //const [currentPage, setCurrentPage] = useState(0);
   //const [totalPages, setTotalPages] = useState(0);
   //const [fields, setFields] = useState([]);
@@ -239,8 +239,11 @@ const handleDownload = async (imageId, imageName) => {
               <React.Fragment key={item.id}>
                 <TableRow> 
                 {/*  onClick={() => handleRowClick(item.id)}> */}
+                
                   {filteredFields.map(field => (
+                    
                     <TableCell key={field}>{
+                        
                         field === 'uploadedFileName' ? (<>
                         { item[field] && (
                           <div>
@@ -264,8 +267,10 @@ const handleDownload = async (imageId, imageName) => {
                         </div>
                         )}</>
                         ) :
-                        ( field === 'isPlApproved' && item[field]==='pending' && role==='PL' ? (
+                        ( field === 'isPlApproved' && item[field]==='pending' && item['isVendorApproved']!='rejected' ? (
                             <>
+                             { role==='PL' ? (
+                              <>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -280,11 +285,17 @@ const handleDownload = async (imageId, imageName) => {
                                 >
                                     Reject
                                 </Button>
+                                </>
+                               ) : ( item[field] ) } 
                             </>
                         ) : (
 
-                            field === 'isVendorApproved' && item[field]==='pending' && role=='VENDOR' ? (
+                            field === 'isVendorApproved' && ((item[field]==='pending' && role=='VENDOR') || ( role=='PL') ) && item['isPlApproved']!='rejected' ? (
+                            
                             <>
+                             { role=='VENDOR' ? (
+
+                              <>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -300,6 +311,9 @@ const handleDownload = async (imageId, imageName) => {
                                     Reject
                                 </Button>
                             </>
+
+                             ) : (item[field]) }
+                             </>
                         ) : (
                             item[field]
                         )

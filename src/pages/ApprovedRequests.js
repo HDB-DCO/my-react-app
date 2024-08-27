@@ -41,7 +41,7 @@ const ApprovedRequests = () => {
     const fetchData = async (page, rowsPerPage) => {
         try {
             setLoading(true);
-            const response = await fetchClient(`getAbsenceRequestsApproved/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
+            const response = await fetchClient(`getAbsenceRequests/status/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
             ////console.log("result :: ",result);
@@ -75,6 +75,7 @@ const ApprovedRequests = () => {
         } catch (error) {
             console.error('Error approving:', error);
         }
+        console.log("")
         fetchData(page, rowsPerPage);
     };
 

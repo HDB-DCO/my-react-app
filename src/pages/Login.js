@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef  } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate  } from 'react-router-dom';
 import { login, logout } from '../redux/authSlice';
+import { getCurrentPage } from '../js/stateUtils';
 import { fetchClient } from '../js/fetchClient';
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const usernameRef = useRef(null);
+  const currentPage = getCurrentPage();
 
          
   // useEffect(() => {
@@ -50,8 +52,12 @@ const Login = () => {
                 // //console.log("token :: ",token);
                 // //console.log("roles :: ",roles);
                 dispatch(login({staffId, token, roles}));
+                
                 // //console.log("before redirecting to profile");
                 // //console.log("roles.includes('ADMIN') :: ",roles.includes('ADMIN'));
+                
+                console.log("currentPage :: ",currentPage);
+                if(currentPage==='/'){
                 if(roles.includes('ADMIN')){
                   navigate('/admin_home');
                 }
@@ -67,6 +73,11 @@ const Login = () => {
                 else{
                   navigate('/');
                 }
+              }
+              else{ 
+                console.log("currentPage :: ",currentPage);
+                navigate(currentPage);
+              }
                // Refresh user list after edit
                // Exit edit mode
             } else {

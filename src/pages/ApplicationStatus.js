@@ -107,7 +107,7 @@ const ApplicationStatus = () => {
     }, [page, rowsPerPage]);
 
     const onSearchButtonClick = async (payload) => {
-
+      
 
   // Construct the API URL with query parameters
   const apiUrl = `filterAbsenceRequests/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`;
@@ -142,14 +142,14 @@ const ApplicationStatus = () => {
     };
     const fetchData = async (page, rowsPerPage) => {
         try {
-      console.log("fetchData is being called.......");
-      console.log("page :: ",page);
-      console.log("rowsPerPage :: ",rowsPerPage);
+      //console.log("fetchData is being called.......");
+      //console.log("page :: ",page);
+      //console.log("rowsPerPage :: ",rowsPerPage);
             setLoading(true);
             const response = await fetchClient(`getAbsenceRequests/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
-            console.log("result :: ",result);
+            //console.log("result :: ",result);
             ////console.log("result.columns :: ",result.columns);
             const data = transformData(result.content);
             setData(data);

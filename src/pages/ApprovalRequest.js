@@ -70,6 +70,9 @@ const ApprovalRequest = () => {
                 }
             });
             if (!response.ok) throw new Error('Network response was not ok');
+            
+        const responseData = await response.text();
+        console.log("responseData :: ",responseData);
             // Handle success or update state if needed
         } catch (error) {
             console.error('Error approving:', error);
