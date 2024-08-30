@@ -10,9 +10,7 @@ const globalValuesSlice = createSlice({
   initialState, 
   reducers: {
     setCurrentPage(state, action) {
-      console.log('login action received:', action);
       state.currentPage = action.payload.path;
-      console.log("action.payload.currentPage :: ",action.payload.path);
     },
     removeCurrentPage(state) {
       //alert("someone's logging out");

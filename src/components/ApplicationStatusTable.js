@@ -274,14 +274,14 @@ const handleDownload = async (imageId, imageName) => {
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => onApprove(item.id, 'approve')}
+                                    onClick={() => onApprove(item.id, 'approve',item.applicationType)}
                                 >
                                     Approve
                                 </Button>
                                 <Button
                                     variant="contained"
                                     color="secondary"
-                                    onClick={() => onApprove(item.id, 'reject')}
+                                    onClick={() => onApprove(item.id, 'reject',item.applicationType)}
                                 >
                                     Reject
                                 </Button>
@@ -299,14 +299,14 @@ const handleDownload = async (imageId, imageName) => {
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => onApprove(item.id, 'approve')}
+                                    onClick={() => onApprove(item.id, 'approve',item.applicationType)}
                                 >
                                     Approve
                                 </Button>
                                 <Button
                                     variant="contained"
                                     color="secondary"
-                                    onClick={() => onApprove(item.id, 'reject')}
+                                    onClick={() => onApprove(item.id, 'reject',item.applicationType)}
                                 >
                                     Reject
                                 </Button>

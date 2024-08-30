@@ -22,7 +22,6 @@ const ProtectedRoute = ({ path, children, roles }) => {
     ////console.log("!isAuthenticated && path!==/login && path!==/register :: ",(!isAuthenticated && path!=="/login"));
     //dispatch(removeCurrentPage());
     dispatch(setCurrentPage({path}));
-    console.log("getCurrentPage() :: ",getCurrentPage());
     if (!isAuthenticated && path!=="/") return false;
     return roles.some(role => userRoles.includes(role));
     if(roles.some(role => userRoles.includes(role))){

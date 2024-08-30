@@ -38,9 +38,14 @@ const ApplicationStatus = () => {
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 11 }, (_, i) => currentYear - i);
+  let allColumns =[];
+  if(role==='ADMIN'){
+    allColumns = ['id', 'username', 'leaveType', 'applicationType', 'applicationDate', 'appliedStartDate', 'appliedEndDate', 'uploadedFileName', 'isApplicationApproved', 'isPlApproved', 'isVendorApproved', 'fileUrl', 'isValidDates'];
+}
+else if(role==='CP'){
+    allColumns = [ 'username', 'leaveType', 'applicationType', 'applicationDate', 'appliedStartDate', 'appliedEndDate', 'uploadedFileName', 'isApplicationApproved', 'isPlApproved', 'isVendorApproved', 'isValidDates', 'revoke'];
 
-  const allColumns = ['id', 'username', 'leaveType', 'applicationDate', 'appliedStartDate', 'appliedEndDate', 'uploadedFileName', 'isPlApproved', 'isVendorApproved', 'fileUrl', 'isValidDates'];
-
+}
     // State for visible columns
     const [visibleColumns, setVisibleColumns] = useState(allColumns);
 
@@ -82,19 +87,63 @@ const ApplicationStatus = () => {
 
 
     const transformData = (data) => {
-        return data.map(({ id, username, leaveType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, fileUrl, isValidDates }) => ({
+        return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isApplicationApproved, isPlApproved, isVendorApproved, fileUrl, isValidDates }) => ({
           id,
           username,
           leaveType,
+          applicationType,
           applicationDate,
           appliedStartDate,
           appliedEndDate,
           uploadedFileName,
+          isApplicationApproved,
           isPlApproved,
           isVendorApproved,
           fileUrl,
           isValidDates,
         }));
+      };
+
+      const calculateNewField = (item) => {
+        // Get today's date and format it as 'YYYY-MM-DD'
+        console.log("calculateNewField-----------");
+        console.log("item :: ",item);
+        const today = new Date().toISOString().split('T')[0];
+      
+        const appliedStartDate = item.appliedStartDate.split(' ')[0];
+        const appliedEndDate = item.appliedEndDate.split(' ')[0];
+      
+        if ((appliedStartDate < today && appliedEndDate < today) || item.applicationType==='Revoking' || item.isApplicationApproved ==='revoked') {
+          return 'cannot';
+        } else if (appliedStartDate > today && appliedEndDate > today) {
+          return 'can';
+        } else if (appliedStartDate < today && appliedEndDate > today) {
+          return 'canwithcaution';
+        }
+      };
+      
+      
+      const transformDataCP = (data) => {
+        console.log("transformDataCP--------");
+        return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isApplicationApproved, isPlApproved, isVendorApproved, fileUrl, isValidDates }) => {
+          const revoke = calculateNewField({ appliedStartDate, appliedEndDate, applicationType, isApplicationApproved });
+          return {
+            id,
+            username,
+            leaveType,
+            applicationType,
+            applicationDate,
+            appliedStartDate,
+            appliedEndDate,
+            uploadedFileName,
+            isApplicationApproved,
+            isPlApproved,
+            isVendorApproved,
+            fileUrl,
+            isValidDates: isValidDates === true ? "Yes" : leaveType==="annual"?"":"No",
+            revoke // Adding the calculated new field here
+          };
+        });
       };
 
       useEffect(() => {
@@ -124,7 +173,8 @@ const ApplicationStatus = () => {
         const result = await response.json();
         console.log("result :: ",result);
         ////console.log("result.columns :: ",result.columns);
-        const data = transformData(result.content);
+        const data = role==='ADMIN'?transformData(result.content):transformDataCP(result.content);
+        //console.log("data :: ",data);
         setData(data);
         setTotalCount(result.totalPages);
         //console.log("result.totalPages :: ",result.totalPages);
@@ -151,7 +201,8 @@ const ApplicationStatus = () => {
             const result = await response.json();
             //console.log("result :: ",result);
             ////console.log("result.columns :: ",result.columns);
-            const data = transformData(result.content);
+            const data = role==='ADMIN'?transformData(result.content):transformDataCP(result.content);
+            //console.log("data :: ",data);
             setData(data);
             setTotalCount(result.totalPages);
             //console.log("result.totalPages :: ",result.totalPages);
@@ -174,6 +225,16 @@ const ApplicationStatus = () => {
               : [...prevVisibleColumns, column]
       );
   };
+
+  const handleRevoke = async (parms) => {
+    console.log("handleRevoke------");
+    console.log("parms :: ",parms);
+    const response = await fetchClient(`requestRevokeEmployeeLeave/${parms.row.id}`,{ method: 'PUT',},null);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const result = await response.text();
+    console.log('result :: ',result);
+    fetchData(page, rowsPerPage);
+  }
 
     const handleApproval = async (id, stage) => {
         try {
@@ -281,6 +342,7 @@ const ApplicationStatus = () => {
                 onPageSizeChange={setRowsPerPage}
                 specificColumn='uploadedFileName' // The column to have a button
                 onSearchButtonClick={onSearchButtonClick}
+                handleRevokeParent={handleRevoke}
             />
 
         </div>

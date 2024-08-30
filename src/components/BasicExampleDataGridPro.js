@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import FileModal from './FileModal';
 import CustomPagination from './CustomPagination';
 import { getRoles } from '../js/stateUtils';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Box  } from '@mui/material';
+import { fetchClient } from '../js/fetchClient';
 
 const BasicExampleDataGridPro = ({
   rows,
@@ -19,6 +21,7 @@ const BasicExampleDataGridPro = ({
   onPageSizeChange,
   specificColumn,
   onSearchButtonClick,
+  handleRevokeParent
 }) => {
   page = page + 1;
   const [filters, setFilters] = useState({});
@@ -28,7 +31,42 @@ const BasicExampleDataGridPro = ({
   const [pageSize, setPageSize] = useState();
   const role = getRoles()[0];
 
-  //console.log("page from parent :: ", page);
+
+const [dialogOpen, setDialogOpen] = useState(false);
+const [selectedFromDate, setSelectedFromDate] = useState(null);
+const [selectedToDate, setSelectedToDate] = useState(null);
+const [selectedParams, setSelectedParams] = useState(null);
+
+
+const formatDate = (dateString) => {
+  return new Date(dateString.split('T')[0]); // Convert to Date object, ignoring time if present
+};
+
+const handleOpenDialog = (params) => {
+  setSelectedFromDate(formatDate(params.row.appliedStartDate));
+  setSelectedToDate(formatDate(params.row.appliedEndDate));
+  setSelectedParams(params);  // Store the entire params object in state
+  setDialogOpen(true);
+};
+
+const handleCloseDialog = () => {
+  setDialogOpen(false);
+};
+
+
+const handleAmendSubmit = () => {
+  // Use the stored params and selected dates
+  
+  console.log("handleAmendSubmit------");
+  const { row } = selectedParams;
+  console.log(`Revoke action for ${row.id} with From: ${selectedFromDate.toISOString().split('T')[0]} and To: ${selectedToDate.toISOString().split('T')[0]}`);
+  
+  handleAmend(row, selectedFromDate, selectedToDate);
+  setDialogOpen(false);
+};
+
+
+  console.log("rows :: ", rows);
 
   useEffect(() => {
     // Fetch data based on current page and page size when they change
@@ -62,6 +100,10 @@ const BasicExampleDataGridPro = ({
     onPageChange(newPage - 1);
   };
 
+  const handleRevoke = async (parms) => {
+    handleRevokeParent(parms);
+  }
+
   // const filteredRows = rows.filter((row) => {
   //   return columns.every((column) => {
   //     const filterValue = filters[column] || '';
@@ -72,45 +114,128 @@ const BasicExampleDataGridPro = ({
   //   });
   // });
 
-  const gridColumns = columns.map((column) => ({
-    field: column,
-    headerName: column.charAt(0).toUpperCase() + column.slice(1),
-    width: 120,
-    renderHeader: () => (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          minHeight: '40px',
-          padding: '8px',
-          boxSizing: 'border-box',
-        }}
-      >
-        <Typography
-          variant="subtitle2"
-          sx={{ fontWeight: 'bold', textAlign: 'center', overflow: 'hidden' }}
-          noWrap
-        >
-          {column.charAt(0).toUpperCase() + column.slice(1)}
-        </Typography>
-      </div>
-    ),
-    renderCell: (params) =>
-      column === specificColumn ? (
-        params.row.uploadedFileName && (
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenModal(params.row.fileUrl)}
+  const gridColumns = columns.map((column) => {
+    if (column === 'revoke') {
+      return {
+        field: column,
+        headerName: column.charAt(0).toUpperCase() + column.slice(1),
+        width: 200,  // Increased width for 'Revoke' column
+        renderHeader: () => (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              minHeight: '40px',
+              padding: '8px',
+              boxSizing: 'border-box',
+            }}
           >
-            {params.row.uploadedFileName}
-          </Button>
-        )
-      ) : (
-        params.value
-      ),
-  }));
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: 'bold', textAlign: 'center', overflow: 'hidden' }}
+              noWrap
+            >
+              {column.charAt(0).toUpperCase() + column.slice(1)}
+            </Typography>
+          </div>
+        ),
+        renderCell: (params) => (
+          <>
+                { params.value === 'can'  ? (
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => handleRevoke(params)}
+                  >
+                    Revoke
+                  </Button>
+                ) : null}
+                {
+                  params.value === 'canwithcaution' || params.value === 'can' ? (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ ml: 2 }} // Adds left margin (padding) of 2 units
+                      onClick={() => handleOpenDialog(params)}
+                    >
+                      Amend
+                    </Button>
+                  ) : null
+                }  
+      
+
+  
+            <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+              <DialogTitle>Revoke Dates</DialogTitle>
+              <DialogContent>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                      label="From"
+                      value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''}
+                      InputProps={{ readOnly: true }}
+                      fullWidth
+                    />
+                    <TextField
+                      label="To"
+                      type="date"
+                      value={selectedToDate ? selectedToDate.toISOString().split('T')[0] : ''}
+                      onChange={(e) => setSelectedToDate(new Date(e.target.value))}
+                      inputProps={{
+                        min: (selectedFromDate && new Date(selectedFromDate) > new Date())
+                          ? selectedFromDate.toISOString().split('T')[0]
+                          : new Date().toISOString().split('T')[0],
+                        max: selectedParams ? formatDate(selectedParams.row.appliedEndDate).toISOString().split('T')[0] : ''
+                      }}
+                      fullWidth
+                    />
+
+                  </Box>
+                </LocalizationProvider>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseDialog}>Cancel</Button>
+                <Button onClick={handleAmendSubmit} variant="contained" color="primary">
+                  Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </>
+        ),
+      };
+    }
+  
+    // Default behavior for other columns
+    return {
+      field: column,
+      headerName: column.charAt(0).toUpperCase() + column.slice(1),
+      width: 120, // Default width
+      renderCell: (params) =>
+        column === specificColumn ? (
+          params.row.uploadedFileName && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenModal(params.row.fileUrl)}
+            >
+              {params.row.uploadedFileName}
+            </Button>
+          )
+        ) : (
+          params.value
+        ),
+    };
+  });
+  
+  
+  // Define the handleAmend function
+  const handleAmend = (row, fromDate, toDate) => {
+    // Perform the necessary action with the row data and the fromDate and toDate
+    console.log(`Revoke action for ID: ${row.id} (${row.username})`);
+    console.log(`From: ${fromDate.toISOString().split('T')[0]}, To: ${toDate.toISOString().split('T')[0]}`);
+  };
+  
 
   const rowCount = totalPages * pageSize;
 
@@ -196,7 +321,7 @@ const BasicExampleDataGridPro = ({
           fileUrl={fileUrl}
           fileType={fileType}
         />
-        <div style={{ width: '100%', minWidth: 800 }}>
+        <div style={{ overflowX: 'auto', width: '100%', minWidth: 800 }}>
           <DataGrid
             rows={rows}
             // rows={filteredRows}

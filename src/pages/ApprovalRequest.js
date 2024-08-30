@@ -16,10 +16,11 @@ const ApprovalRequest = () => {
     const staffId = getStaffId();
 
     const transformData = (data) => {
-        return data.map(({ id, username, leaveType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, }) => ({
+        return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, }) => ({
           id,
           username,
           leaveType,
+          applicationType,
           applicationDate,
           appliedStartDate,
           appliedEndDate,
@@ -60,10 +61,10 @@ const ApprovalRequest = () => {
 
     };
 
-    const handleApproval = async (id, action) => {
-        try {
-
-            const response = await fetchClient(`approveLeaveRequest/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
+    const handleApproval = async (id, action, applicationType) => {
+        console.log("applicationType :: ",applicationType);
+        if(applicationType==='Revoking'){
+            const response = await fetchClient(`revokeEmployeeLeave/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -71,11 +72,26 @@ const ApprovalRequest = () => {
             });
             if (!response.ok) throw new Error('Network response was not ok');
             
-        const responseData = await response.text();
-        console.log("responseData :: ",responseData);
-            // Handle success or update state if needed
-        } catch (error) {
-            console.error('Error approving:', error);
+            const responseData = await response.text();
+            console.log("responseData :: ",responseData);
+        }
+        else{
+            try {
+
+                const response = await fetchClient(`approveLeaveRequest/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+            const responseData = await response.text();
+            console.log("responseData :: ",responseData);
+                // Handle success or update state if needed
+            } catch (error) {
+                console.error('Error approving:', error);
+            }
         }
         fetchData(page, rowsPerPage);
     };

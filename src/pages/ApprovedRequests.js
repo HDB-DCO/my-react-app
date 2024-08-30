@@ -16,10 +16,11 @@ const ApprovedRequests = () => {
     const staffId = getStaffId();
 
     const transformData = (data) => {
-        return data.map(({ id, username, leaveType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, fileUrl, }) => ({
+        return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, fileUrl, }) => ({
           id,
           username,
           leaveType,
+          applicationType,
           applicationDate,
           appliedStartDate,
           appliedEndDate,
