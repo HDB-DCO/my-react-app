@@ -14,6 +14,8 @@ const ApprovedRequests = () => {
     const [loading, setLoading] = useState(true);
     const role = getRoles()[0];
     const staffId = getStaffId();
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const transformData = (data) => {
         return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, fileUrl, }) => ({
@@ -63,21 +65,34 @@ const ApprovedRequests = () => {
     };
 
     const handleApproval = async (id, action) => {
-        try {
-
-            const response = await fetchClient(`approveLeaveRequest/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
+        
+        const response = await fetchClient(`approveLeaveRequest/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            if (!response.ok) throw new Error('Network response was not ok');
+            const result = await response.text();
+            if (!response.ok){
+                if(response.status === 409){
+                    setMessage(result);
+                    setMessageType('error');
+                  }
+            } else {
+                setMessage(result);
+                setMessageType('success');
+            }
             // Handle success or update state if needed
-        } catch (error) {
-            console.error('Error approving:', error);
-        }
+        
         console.log("")
         fetchData(page, rowsPerPage);
+        
+    setTimeout(() => {
+        console.log("Waited 5 seconds");
+        setMessage("");
+        setMessageType("");
+      }, 5000);
+      
     };
 
     return (
@@ -88,18 +103,25 @@ const ApprovedRequests = () => {
             <CircularProgress />
         </Box>
         ) : (
-        <div>
-            <ApplicationStatusTable
-            data={data}
-            fields={columns}
-            currentPage={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-            onRowsPerPageChange={setRowsPerPage}
-            onApprove={handleApproval}
-            totalPages={totalCount} // Pass total count to the table
-        /> 
-        </div>
+        <>
+           <> {message && (
+                <div className={`message ${messageType}`}>
+                    {message}
+                </div>
+            )} </>
+            <div>
+                <ApplicationStatusTable
+                data={data}
+                fields={columns}
+                currentPage={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={setPage}
+                onRowsPerPageChange={setRowsPerPage}
+                onApprove={handleApproval}
+                totalPages={totalCount} // Pass total count to the table
+            /> 
+            </div>
+        </>
         
     ) }
          {/* <ApplicationStatusTable

@@ -25,7 +25,7 @@ const AdminHome = () => {
 
         <div>
         {/* <BasicExampleDataGrid rows={rows} columns={columns} /> */}
-        < SimpleDataGrid />
+        {/* < SimpleDataGrid /> */}
         </div>
     </div>;
 };

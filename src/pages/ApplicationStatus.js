@@ -34,6 +34,8 @@ const ApplicationStatus = () => {
         { name: 'November', value: 11 },
         { name: 'December', value: 12 }
       ];
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
 
   const currentYear = new Date().getFullYear();
@@ -100,7 +102,7 @@ else if(role==='CP'){
           isPlApproved,
           isVendorApproved,
           fileUrl,
-          isValidDates,
+          isValidDates: isValidDates === true ? "Yes" : leaveType==="annual"?"":"No",
         }));
       };
 
@@ -113,20 +115,29 @@ else if(role==='CP'){
         const appliedStartDate = item.appliedStartDate.split(' ')[0];
         const appliedEndDate = item.appliedEndDate.split(' ')[0];
       
-        if ((appliedStartDate < today && appliedEndDate < today) || item.applicationType==='Revoking' || item.isApplicationApproved ==='revoked') {
-          return 'cannot';
-        } else if (appliedStartDate > today && appliedEndDate > today) {
+        if((appliedStartDate >= today && appliedEndDate >= today) && item.applicationType==='Applying' && (item.isApplicationApproved ==='pending' || item.isApplicationApproved ==='approved')){
           return 'can';
-        } else if (appliedStartDate < today && appliedEndDate > today) {
-          return 'canwithcaution';
+        } else {
+          return 'cannot';
         }
+        // if ((appliedStartDate < today && appliedEndDate < today) || item.applicationType==='Revoking' || item.isApplicationApproved ==='revoked' || item.isApplicationApproved ==='rejected' || item.isApplicationApproved ==='Admin Rejected') {
+        //   return 'cannot';
+        // } 
+        // else {
+        //  return 'can';
+        // }
+        // else if ((appliedStartDate > today && appliedEndDate > today) || (item.isPlApproved==='pending' && item.isVendorApproved==='pending')) {
+        //   return 'can';
+        // } else if ((appliedStartDate < today && appliedEndDate > today) || (item.isPlApproved==='approved' && item.isVendorApproved==='approved')) {
+        //   return 'canwithcaution';
+        // }
       };
       
       
       const transformDataCP = (data) => {
         console.log("transformDataCP--------");
         return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isApplicationApproved, isPlApproved, isVendorApproved, fileUrl, isValidDates }) => {
-          const revoke = calculateNewField({ appliedStartDate, appliedEndDate, applicationType, isApplicationApproved });
+          const revoke = calculateNewField({ appliedStartDate, appliedEndDate, applicationType, isApplicationApproved, isPlApproved, isVendorApproved });
           return {
             id,
             username,
@@ -195,6 +206,7 @@ else if(role==='CP'){
       //console.log("fetchData is being called.......");
       //console.log("page :: ",page);
       //console.log("rowsPerPage :: ",rowsPerPage);
+      
             setLoading(true);
             const response = await fetchClient(`getAbsenceRequests/${staffId}?page=${page}&size=${rowsPerPage}&role=${role}`,{},null);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -229,12 +241,55 @@ else if(role==='CP'){
   const handleRevoke = async (parms) => {
     console.log("handleRevoke------");
     console.log("parms :: ",parms);
+    setLoading(true);
     const response = await fetchClient(`requestRevokeEmployeeLeave/${parms.row.id}`,{ method: 'PUT',},null);
     if (!response.ok) throw new Error('Network response was not ok');
     const result = await response.text();
     console.log('result :: ',result);
     fetchData(page, rowsPerPage);
+    setLoading(false);
   }
+
+  const handleAmendParent = async (row,fromDate,toDate) => {
+    console.log("handleAmendParent------");
+    setLoading(true);
+    //console.log("row :: ",row);
+    const response = await fetchClient(`requestAmendEmployeeLeave/${row.id}?appliedStartDateAmended=${fromDate}&appliedEndDateAmended=${toDate}`,{ method: 'PUT',},null); 
+    const result = await response.text();
+    if (!response.ok){
+      if(response.status === 409){
+        setMessage(result);
+        setMessageType('error');
+      }
+    } else{
+    setMessage(result);
+    setMessageType('success');
+    }
+    console.log('result :: ',result);
+    fetchData(page, rowsPerPage);
+    setLoading(false);
+  }
+
+  const handleAdminMCCheck = async (params,action) => {
+    console.log("handleAdminMCCheck------");
+    setLoading(true);
+    //console.log("row :: ",row);
+    const response = await fetchClient(`handleAdminMCCheck/${params.row.id}?action=${action}`,{ method: 'PUT',},null); 
+    const result = await response.text();
+    if (!response.ok){
+      if(response.status === 409){
+        setMessage(result);
+        setMessageType('error');
+      }
+    } else{
+    setMessage(result);
+    setMessageType('success');
+    }
+    console.log('result :: ',result);
+    fetchData(page, rowsPerPage);
+    setLoading(false);
+  }
+
 
     const handleApproval = async (id, stage) => {
         try {
@@ -260,6 +315,12 @@ else if(role==='CP'){
         </Box>
         ) : (
         <div>
+          {message && (
+                <div className={`message ${messageType}`}>
+                    {message}
+                </div>
+            )}
+
             {/* {
                 role==='ADMIN' && (<div>
                     <Grid container spacing={2}>
@@ -343,6 +404,8 @@ else if(role==='CP'){
                 specificColumn='uploadedFileName' // The column to have a button
                 onSearchButtonClick={onSearchButtonClick}
                 handleRevokeParent={handleRevoke}
+                handleAmendParent={handleAmendParent}
+                handleAdminMCCheck={handleAdminMCCheck}
             />
 
         </div>

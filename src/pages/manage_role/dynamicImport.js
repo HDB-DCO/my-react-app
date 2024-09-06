@@ -22,9 +22,9 @@ const dynamicImport = (path) => {
     case '/application_status':
       return React.lazy(() => import('../ApplicationStatus'));
     case '/approval_request':
-      return React.lazy(() => import('../ApprovalRequest'));
+      return React.lazy(() => import('../ApprovalRequestPL'));
     case '/approved_requests':
-      return React.lazy(() => import('../ApprovedRequests'));
+      return React.lazy(() => import('../ApprovedRequestsPL'));
     // Add more paths as needed
     default:
       return React.lazy(() => import('../NoPage'));

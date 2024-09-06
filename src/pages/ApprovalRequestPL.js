@@ -14,6 +14,8 @@ const ApprovalRequest = () => {
     const [loading, setLoading] = useState(true);
     const role = getRoles()[0];
     const staffId = getStaffId();
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const transformData = (data) => {
         return data.map(({ id, username, leaveType, applicationType, applicationDate, appliedStartDate, appliedEndDate, uploadedFileName, isPlApproved, isVendorApproved, }) => ({
@@ -75,23 +77,49 @@ const ApprovalRequest = () => {
             const responseData = await response.text();
             console.log("responseData :: ",responseData);
         }
-        else{
-            try {
+        else if(applicationType==='Amending'){
+            
+            const response = await fetchClient(`amendEmployeeLeave/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const responseData = await response.text();
+            console.log("responseData :: ",responseData);
 
+        }
+        else{
+                
+            setLoading(true);
                 const response = await fetchClient(`approveLeaveRequest/${id}?approverStaffId=${staffId}&approverRole=${role}&action=${action}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
-                if (!response.ok) throw new Error('Network response was not ok');
                 
-            const responseData = await response.text();
-            console.log("responseData :: ",responseData);
+            setLoading(false);
+                const result = await response.text();
+                console.log("result :: ",result);
+                if (!response.ok){
+                    if(response.status === 409){
+                      setMessage(result);
+                      setMessageType('error');
+                    }
+                  } else{
+                  setMessage(result);
+                  setMessageType('success');
+                  }
+                  
+                setTimeout(() => {
+                    console.log("Waited 7 seconds");
+                    setMessage("");
+                    setMessageType("");
+                }, 7000);
                 // Handle success or update state if needed
-            } catch (error) {
-                console.error('Error approving:', error);
-            }
         }
         fetchData(page, rowsPerPage);
     };
@@ -104,18 +132,25 @@ const ApprovalRequest = () => {
             <CircularProgress />
         </Box>
         ) : (
-        <div>
-            <ApplicationStatusTable
-            data={data}
-            fields={columns}
-            currentPage={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-            onRowsPerPageChange={setRowsPerPage}
-            onApprove={handleApproval}
-            totalPages={totalCount} // Pass total count to the table
-        /> 
-        </div>
+        <>
+            {message && (
+                <div className={`message ${messageType}`}>
+                    {message}
+                </div>
+            )}
+            <div>
+                <ApplicationStatusTable
+                data={data}
+                fields={columns}
+                currentPage={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={setPage}
+                onRowsPerPageChange={setRowsPerPage}
+                onApprove={handleApproval}
+                totalPages={totalCount} // Pass total count to the table
+            /> 
+            </div>
+        </>
         
     ) }
          {/* <ApplicationStatusTable

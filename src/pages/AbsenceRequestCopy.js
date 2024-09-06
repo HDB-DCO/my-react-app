@@ -33,12 +33,15 @@ const leaveTypes = [
 ];
 
 const AbsenceRequestCopy = () => {
+
+  const today = new Date().toISOString().split('T')[0];
+  //console.log("today :: ",today);
   const [employeeId, setEmployeeId] = useState(getStaffId());
   const [leaveType, setLeaveType] = useState("annual");
   const [file, setFile] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const [appliedStartDate, setAppliedStartDate] = useState("2024-06-19");
-  const [appliedEndDate, setAppliedEndDate] = useState("2024-06-19");
+  const [appliedStartDate, setAppliedStartDate] = useState(today);//2024-06-19");
+  const [appliedEndDate, setAppliedEndDate] = useState(today);//2024-06-19");
   const [ocrResult, setOcrResult] = useState("");
   const [dates, setDates] = useState({});
   const [isValidDates, setIsValidDates] = useState(false);
@@ -235,22 +238,34 @@ const AbsenceRequestCopy = () => {
     },null);
     //console.log("response :: ",response);
     const responseData = await response.text();
-    //console.log("responseData :: ",responseData);
+    console.log("responseData :: ",responseData);
     if (response.ok) {
       setMessage(responseData);
       setMessageType('success');
+      
+
+      setFile(null);
+      setAppliedStartDate(today);
+      setAppliedEndDate(today);
+      setLeaveType('annual');
+      setUploadedFileName('');
+      setOcrResult('');
+      setDates({});
+      setIsValidDates(false);
+      
     } else {
-      setMessage('File is not Uploaded successfully please try again later');
+      console.log("else----");
+      setMessage(responseData);
       setMessageType('error');
     }
-    setFile(null);
-    setAppliedStartDate('2024-06-19');
-    setAppliedEndDate('2024-06-19');
-    setLeaveType('annual');
-    setUploadedFileName('');
-    setOcrResult('');
-    setDates({});
-    setIsValidDates(false);
+
+    
+    setTimeout(() => {
+      console.log("Waited 5 seconds");
+      setMessage("");
+      setMessageType("");
+    }, 5000);
+
 
 
     // axios
@@ -351,6 +366,7 @@ const AbsenceRequestCopy = () => {
                 InputLabelProps={{ shrink: true }}
                 value={appliedStartDate}
                 onChange={(e) => setAppliedStartDate(e.target.value)}
+                inputProps={{ min: today }}
                 required
               />
             </Grid>
@@ -362,6 +378,7 @@ const AbsenceRequestCopy = () => {
                 InputLabelProps={{ shrink: true }}
                 value={appliedEndDate}
                 onChange={(e) => setAppliedEndDate(e.target.value)}
+                inputProps={{ min: appliedStartDate || today }}
                 required
               />
             </Grid>
@@ -406,8 +423,21 @@ const AbsenceRequestCopy = () => {
               </li>
             ))}
           </ul> */}
-          <Typography variant="h6">Is valid:</Typography>
-          <Typography variant="body1">{isValidDates.toString()}</Typography>
+          { file && leaveType === "mc" && !isUploading && <> 
+          { isValidDates ? (
+                <div className={`message success`}>
+                    {"The Medical Certificate you have uploaded is validated Successfully!"}
+                </div>
+           ) : ( 
+           <div className={`message error`}>
+              {"The Medical Certificate you have uploaded has failed to validate. Admin may get back to you."}
+           </div> )  }
+          {/* <Typography variant="h6">Is valid:</Typography>
+          <Typography variant="body1">{isValidDates.toString()}</Typography>  */}
+          
+          </>
+           
+           }
         </Box>
       </Paper>
 

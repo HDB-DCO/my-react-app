@@ -20,13 +20,13 @@ root.render(
     
     <React.StrictMode>
     <BrowserRouter>
-        <MsalProvider instance={msalInstance}>
+        {/* <MsalProvider instance={msalInstance}> */}
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <App />
                 </PersistGate>
             </Provider>
-        </MsalProvider>
+        {/* </MsalProvider> */}
         </BrowserRouter>
     </React.StrictMode>
 );

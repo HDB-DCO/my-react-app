@@ -21,7 +21,9 @@ const BasicExampleDataGridPro = ({
   onPageSizeChange,
   specificColumn,
   onSearchButtonClick,
-  handleRevokeParent
+  handleRevokeParent,
+  handleAmendParent,
+  handleAdminMCCheck,
 }) => {
   page = page + 1;
   const [filters, setFilters] = useState({});
@@ -33,9 +35,11 @@ const BasicExampleDataGridPro = ({
 
 
 const [dialogOpen, setDialogOpen] = useState(false);
+const [initialFromDate, setInitialFromDate] = useState(null);
 const [selectedFromDate, setSelectedFromDate] = useState(null);
 const [selectedToDate, setSelectedToDate] = useState(null);
 const [selectedParams, setSelectedParams] = useState(null);
+
 
 
 const formatDate = (dateString) => {
@@ -44,6 +48,7 @@ const formatDate = (dateString) => {
 
 const handleOpenDialog = (params) => {
   setSelectedFromDate(formatDate(params.row.appliedStartDate));
+  setInitialFromDate(formatDate(params.row.appliedStartDate));
   setSelectedToDate(formatDate(params.row.appliedEndDate));
   setSelectedParams(params);  // Store the entire params object in state
   setDialogOpen(true);
@@ -115,6 +120,38 @@ const handleAmendSubmit = () => {
   // });
 
   const gridColumns = columns.map((column) => {
+    if (column === 'isValidDates' && role === 'ADMIN') {
+      return {
+        field: column,
+        headerName: 'Is Valid Dates',
+        width: 200, // Customize the width as needed
+        renderCell: (params) => (
+          <>
+            {params.row.isValidDates === 'No' && params.row.isApplicationApproved != 'Admin Rejected'? (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="primary"
+                  onClick={() => handleAdminMCCheck(params,'accept')}
+                >
+                  Accept
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="secondary"
+                  onClick={() => handleAdminMCCheck(params,'reject')}
+                >
+                  Reject
+                </Button>
+              </Box>
+            ) : null}
+          </>
+        ),
+      };
+    }
+
     if (column === 'revoke') {
       return {
         field: column,
@@ -142,7 +179,7 @@ const handleAmendSubmit = () => {
         ),
         renderCell: (params) => (
           <>
-                { params.value === 'can'  ? (
+                { params.value === 'can' ? (
                   <Button
                     variant="contained"
                     size="small"
@@ -151,8 +188,8 @@ const handleAmendSubmit = () => {
                     Revoke
                   </Button>
                 ) : null}
-                {
-                  params.value === 'canwithcaution' || params.value === 'can' ? (
+                {/* {
+                  (params.value === 'canwithcaution' || params.value === 'can') ? (
                     <Button
                       variant="contained"
                       size="small"
@@ -162,7 +199,7 @@ const handleAmendSubmit = () => {
                       Amend
                     </Button>
                   ) : null
-                }  
+                }   */}
       
 
   
@@ -171,11 +208,32 @@ const handleAmendSubmit = () => {
               <DialogContent>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {/* <TextField
+                      label="From"
+                      type="date"
+                      value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''}
+                      onChange={(e) => setSelectedFromDate(new Date(e.target.value))}
+                      InputProps={{
+                        min: (selectedFromDate && new Date(selectedFromDate) > new Date())
+                          ? selectedFromDate.toISOString().split('T')[0]
+                          : new Date().toISOString().split('T')[0],
+                        max: selectedParams ? formatDate(selectedParams.row.appliedEndDate).toISOString().split('T')[0] : ''
+                      }}
+                      fullWidth
+                    /> */}
                     <TextField
                       label="From"
+                      type="date"
                       value={selectedFromDate ? selectedFromDate.toISOString().split('T')[0] : ''}
-                      InputProps={{ readOnly: true }}
+                      onChange={(e) => setSelectedFromDate(new Date(e.target.value))}
+                      inputProps={{
+                        min: (initialFromDate && new Date(initialFromDate) > new Date())
+                          ? initialFromDate.toISOString().split('T')[0]
+                          : new Date().toISOString().split('T')[0],
+                        max: selectedParams ? formatDate(selectedParams.row.appliedEndDate).toISOString().split('T')[0] : ''
+                      }}
                       fullWidth
+                      disabled={initialFromDate && new Date(initialFromDate) < new Date()}
                     />
                     <TextField
                       label="To"
@@ -232,6 +290,7 @@ const handleAmendSubmit = () => {
   // Define the handleAmend function
   const handleAmend = (row, fromDate, toDate) => {
     // Perform the necessary action with the row data and the fromDate and toDate
+    handleAmendParent(row,`${fromDate.toISOString().split('T')[0]}`, `${toDate.toISOString().split('T')[0]}`);
     console.log(`Revoke action for ID: ${row.id} (${row.username})`);
     console.log(`From: ${fromDate.toISOString().split('T')[0]}, To: ${toDate.toISOString().split('T')[0]}`);
   };
