@@ -365,7 +365,13 @@ const AbsenceRequestCopy = () => {
                 type="date"
                 InputLabelProps={{ shrink: true }}
                 value={appliedStartDate}
-                onChange={(e) => setAppliedStartDate(e.target.value)}
+                onChange={(e) => {
+                  const newStartDate = e.target.value;
+                  setAppliedStartDate(newStartDate);
+                  if (new Date(appliedEndDate) < new Date(newStartDate)) {
+                    setAppliedEndDate(newStartDate);
+                  }
+                }}
                 inputProps={{ min: today }}
                 required
               />
