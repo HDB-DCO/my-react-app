@@ -115,7 +115,7 @@ else if(role==='CP'){
         const appliedStartDate = item.appliedStartDate.split(' ')[0];
         const appliedEndDate = item.appliedEndDate.split(' ')[0];
       
-        if((appliedStartDate >= today && appliedEndDate >= today) && item.applicationType==='Applying' && (item.isApplicationApproved ==='pending' || item.isApplicationApproved ==='approved')){
+        if((appliedEndDate >= today) && item.applicationType==='Applying' && (item.isApplicationApproved ==='pending' || item.isApplicationApproved ==='approved')){
           return 'can';
         } else {
           return 'cannot';
